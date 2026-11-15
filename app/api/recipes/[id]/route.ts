@@ -17,6 +17,7 @@ function validateRecipePayload(body: any) {
   return (
     body &&
     typeof body.title === 'string' &&
+    body.title.trim().length > 0 &&
     typeof body.description === 'string' &&
     typeof body.duration === 'string' &&
     typeof body.servings === 'string' &&

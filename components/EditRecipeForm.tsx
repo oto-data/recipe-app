@@ -27,5 +27,5 @@ export function EditRecipeForm({ recipe }: EditRecipeFormProps) {
     router.push(`/recipes/${payload.id}`);
   };
 
-  return <RecipeForm initialValues={recipe} submitLabel="更新する" onSubmit={handleSubmit} />;
+  return <RecipeForm initialValues={recipe} recipeId={recipe.id} submitLabel="更新する" onSubmit={handleSubmit} />;
 }

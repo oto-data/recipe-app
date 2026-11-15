@@ -8,16 +8,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#f7f2eb',
-        surface: '#fffdf9',
-        accent: '#d97d3f',
-        accentDark: '#b25624',
-        textPrimary: '#2f2b24',
-        textSecondary: '#6f665c',
-        border: '#eadfd0'
+        background: '#effafa',
+        surface: '#ffffff',
+        accent: '#14b8c9',
+        accentDark: '#0e7c8c',
+        coral: '#ff8fa3',
+        textPrimary: '#173f42',
+        textSecondary: '#5f7f83',
+        border: '#d7eeee'
       },
       boxShadow: {
-        soft: '0 18px 36px rgba(90, 62, 35, 0.12)'
+        soft: '0 18px 36px rgba(14, 124, 140, 0.14)'
+      },
+      fontFamily: {
+        sans: ['var(--font-zen-maru)', '"Zen Maru Gothic"', '"Noto Sans JP"', 'ui-sans-serif', 'system-ui', 'sans-serif']
       }
     }
   },

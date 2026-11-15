@@ -25,6 +25,33 @@ export const categories = ['主食', 'おかず', 'スイーツ', '軽食', 'ド
 
 export const tags = ['時短', '作り置き', '節約', '和食', '洋食', 'チーズ', 'ヘルシー', 'お弁当', '冷凍可'];
 
+export type CategoryMeta = {
+  emoji: string;
+  /** Full literal Tailwind gradient classes so they are picked up by the compiler. */
+  gradient: string;
+};
+
+export const categoryMeta: Record<string, CategoryMeta> = {
+  主食: { emoji: '🍚', gradient: 'from-[#ffe9a8] to-[#ffd166]' },
+  おかず: { emoji: '🍳', gradient: 'from-[#b8f1e4] to-[#5ec8b8]' },
+  スイーツ: { emoji: '🍰', gradient: 'from-[#ffd6e0] to-[#ff9eb5]' },
+  軽食: { emoji: '🥪', gradient: 'from-[#d9f2c2] to-[#a5d66d]' },
+  ドリンク: { emoji: '🥤', gradient: 'from-[#c2e8ff] to-[#6db9e8]' },
+  その他: { emoji: '📦', gradient: 'from-[#e2e0ff] to-[#a9a3e0]' }
+};
+
+export const defaultCategoryMeta: CategoryMeta = {
+  emoji: '🍽️',
+  gradient: 'from-[#c9f2f2] to-[#7fd1d9]'
+};
+
+export function getCategoryMeta(category: string): CategoryMeta {
+  return categoryMeta[category] ?? defaultCategoryMeta;
+}
+
+export const durationOptions = ['5分', '10分', '15分', '30分', '45分', '1時間〜'];
+export const servingsOptions = ['1人前', '2人前', '3人前', '4人前〜'];
+
 export function recipeFromDb(recipe: PrismaRecipe): Recipe {
   return {
     id: recipe.id,
