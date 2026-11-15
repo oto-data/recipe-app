@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, Sparkles } from 'lucide-react';
+import { Camera, ChevronDown, Sparkles, X } from 'lucide-react';
 import { categories, durationOptions, getCategoryMeta, servingsOptions, tags } from '@/lib/recipes';
 import type { RecipeFormValues, RecipeStep } from '@/lib/recipes';
 import { ChipSelect, TagChips } from '@/components/ChipSelect';
@@ -27,6 +27,8 @@ type Draft = {
   steps: RecipeStep[];
   notes: string;
   tags: string[];
+  image: string;
+  sourceUrl: string;
 };
 
 function flattenSteps(steps: RecipeStep[]): RecipeStep[] {
@@ -56,6 +58,10 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
     initialValues?.steps.length ? flattenSteps(initialValues.steps) : [{ label: '', description: '' }]
   );
   const [notes, setNotes] = useState(initialValues?.notes ?? '');
+  const [image, setImage] = useState(initialValues?.image ?? '');
+  const [sourceUrl, setSourceUrl] = useState(initialValues?.sourceUrl ?? '');
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>(initialValues?.tags ?? []);
   const [showDetails, setShowDetails] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -75,8 +81,10 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
         setIngredients(draft.ingredients?.length ? draft.ingredients : ['']);
         setSteps(draft.steps?.length ? flattenSteps(draft.steps) : [{ label: '', description: '' }]);
         setNotes(draft.notes ?? '');
+        setImage(draft.image ?? '');
+        setSourceUrl(draft.sourceUrl ?? '');
         setSelectedTags(draft.tags ?? []);
-        if (draft.description || draft.notes) setShowDetails(true);
+        if (draft.description || draft.notes || draft.sourceUrl) setShowDetails(true);
       }
     } catch {
       // ignore broken drafts
@@ -97,14 +105,16 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
       ingredients,
       steps,
       notes,
-      tags: selectedTags
+      tags: selectedTags,
+      image,
+      sourceUrl
     };
     try {
       window.localStorage.setItem(draftKey, JSON.stringify(draft));
     } catch {
       // storage full / unavailable: ignore
     }
-  }, [draftKey, title, description, category, duration, servings, ingredients, steps, notes, selectedTags]);
+  }, [draftKey, title, description, category, duration, servings, ingredients, steps, notes, selectedTags, image, sourceUrl]);
 
   const handleAddIngredient = () => setIngredients((current) => [...current, '']);
   const handleRemoveIngredient = (index: number) =>
@@ -134,6 +144,30 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
     if (newSteps.length > 0) setSteps(newSteps);
   };
 
+  const handlePhotoChange = (file: File | null) => {
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview);
+    }
+    setPhotoFile(file);
+    setPhotoPreview(file ? URL.createObjectURL(file) : '');
+  };
+
+  const handlePhotoRemove = () => {
+    handlePhotoChange(null);
+    setImage('');
+  };
+
+  const uploadPhoto = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch('/api/upload', { method: 'POST', body: formData });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok || !payload?.url) {
+      throw new Error(payload?.error ?? '写真のアップロードに失敗しました。');
+    }
+    return payload.url as string;
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormError(null);
@@ -145,6 +179,8 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
 
     setIsSaving(true);
     try {
+      // A newly chosen photo is uploaded first; the returned local path is saved on the recipe.
+      const imageUrl = photoFile ? await uploadPhoto(photoFile) : image;
       await onSubmit({
         title: title.trim(),
         description: description.trim(),
@@ -152,6 +188,8 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
         duration: duration.trim(),
         servings: servings.trim(),
         notes: notes.trim(),
+        image: imageUrl,
+        sourceUrl: sourceUrl.trim(),
         tags: selectedTags,
         ingredients: ingredients.map((item) => item.trim()).filter(Boolean),
         steps: steps
@@ -186,6 +224,57 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
           className={inputClass}
         />
       </label>
+
+      <div className="space-y-2">
+        <span className="text-sm font-medium text-textSecondary">写真（任意）</span>
+        {photoPreview || image ? (
+          <div className="relative overflow-hidden rounded-3xl border border-border">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photoPreview || image}
+              alt="レシピの写真"
+              className="h-48 w-full object-cover"
+            />
+            <div className="absolute right-3 top-3 flex gap-2">
+              <label className="cursor-pointer rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-textPrimary shadow-sm transition hover:text-accent">
+                変更
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={(event) => {
+                    handlePhotoChange(event.target.files?.[0] ?? null);
+                    event.target.value = '';
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                onClick={handlePhotoRemove}
+                className="inline-flex items-center gap-1 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-white"
+              >
+                <X className="h-4 w-4" />
+                削除
+              </button>
+            </div>
+          </div>
+        ) : (
+          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-border bg-background px-4 py-8 text-textSecondary transition hover:border-accent hover:text-accent">
+            <Camera className="h-8 w-8" />
+            <span className="text-sm font-semibold">タップで写真を撮る・選ぶ</span>
+            <span className="text-xs">写真と料理名だけでも保存できます</span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={(event) => {
+                handlePhotoChange(event.target.files?.[0] ?? null);
+                event.target.value = '';
+              }}
+            />
+          </label>
+        )}
+      </div>
 
       <PasteImport onApply={handlePasteApply} />
 
@@ -307,7 +396,7 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
         >
           <span className="inline-flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-accent" />
-            くわしく書く（説明・メモ）
+            くわしく書く（説明・メモ・出典）
           </span>
           <ChevronDown
             className={`h-5 w-5 text-textSecondary transition ${showDetails ? 'rotate-180' : ''}`}
@@ -331,6 +420,16 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
                 onChange={(event) => setNotes(event.target.value)}
                 placeholder="例：たれは弱火で焦がさないように。"
                 className="min-h-[96px] w-full rounded-3xl border border-border bg-white p-4 text-base text-textPrimary outline-none transition focus:border-accent"
+              />
+            </label>
+            <label className="block space-y-2 sm:col-span-2">
+              <span className="text-sm font-medium text-textSecondary">出典URL</span>
+              <input
+                type="url"
+                value={sourceUrl}
+                onChange={(event) => setSourceUrl(event.target.value)}
+                placeholder="例：https://cookpad.com/recipe/…"
+                className="w-full rounded-3xl border border-border bg-white px-4 py-3 text-base text-textPrimary outline-none transition focus:border-accent"
               />
             </label>
           </div>

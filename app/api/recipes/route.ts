@@ -7,6 +7,10 @@ function formatRecipe(recipe: any) {
     ...recipe,
     category: recipe.category ?? '',
     favorite: Boolean(recipe.favorite),
+    image: recipe.image ?? '',
+    sourceUrl: recipe.sourceUrl ?? '',
+    lastCookedAt: recipe.lastCookedAt ? new Date(recipe.lastCookedAt).toISOString() : null,
+    cookedCount: recipe.cookedCount ?? 0,
     tags: recipe.tags ? recipe.tags.split(',').filter(Boolean) : [],
     ingredients: recipe.ingredients ? JSON.parse(recipe.ingredients) : [],
     steps: recipe.steps ? JSON.parse(recipe.steps) : []
@@ -24,6 +28,8 @@ function validateRecipePayload(body: any) {
     typeof body.notes === 'string' &&
     (body.category === undefined || typeof body.category === 'string') &&
     (body.favorite === undefined || typeof body.favorite === 'boolean') &&
+    (body.image === undefined || typeof body.image === 'string') &&
+    (body.sourceUrl === undefined || typeof body.sourceUrl === 'string') &&
     Array.isArray(body.ingredients) &&
     Array.isArray(body.steps)
   );
@@ -67,6 +73,8 @@ export async function POST(request: Request) {
         tags: Array.isArray(body.tags) ? body.tags.join(',') : '',
         category: typeof body.category === 'string' ? body.category : '',
         favorite: typeof body.favorite === 'boolean' ? body.favorite : false,
+        image: typeof body.image === 'string' ? body.image : '',
+        sourceUrl: typeof body.sourceUrl === 'string' ? body.sourceUrl : '',
         ingredients: JSON.stringify(body.ingredients),
         steps: JSON.stringify(body.steps)
       }

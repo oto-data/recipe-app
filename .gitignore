@@ -30,3 +30,7 @@ Thumbs.db
 
 # Local workspace copy
 life/
+
+# Uploaded recipe photos stay local (public repo) — only the placeholder is tracked
+public/uploads/*
+!public/uploads/.gitkeep
