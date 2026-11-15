@@ -20,7 +20,7 @@ export default function CookpadDetailPage({ params }: { params: Promise<{ id: st
         </Link>
 
         <div className="overflow-hidden rounded-[32px] border border-border bg-surface shadow-soft">
-          <div className="bg-gradient-to-br from-[#f8efe1] via-[#f4e4d2] to-[#efe0ca] p-6 sm:p-8">
+          <div className="bg-gradient-to-br from-[#dcf7f7] via-[#c8f0ee] to-[#bfe9f5] p-6 sm:p-8">
             <div className="space-y-5">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-2 text-sm font-semibold text-accentDark shadow-sm">
                 <Sparkles className="h-4 w-4" />
@@ -52,7 +52,7 @@ export default function CookpadDetailPage({ params }: { params: Promise<{ id: st
 
             <section className="rounded-[24px] border border-border bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-2xl bg-[#fff7ee] p-2 text-accent">
+                <div className="rounded-2xl bg-[#e6fafa] p-2 text-accent">
                   <ListChecks className="h-5 w-5" />
                 </div>
                 <div>
@@ -67,7 +67,7 @@ export default function CookpadDetailPage({ params }: { params: Promise<{ id: st
 
             <section className="rounded-[24px] border border-border bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-2xl bg-[#fff7ee] p-2 text-accent">
+                <div className="rounded-2xl bg-[#e6fafa] p-2 text-accent">
                   <BookOpen className="h-5 w-4" />
                 </div>
                 <div>
@@ -91,7 +91,7 @@ export default function CookpadDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </section>
 
-            <section className="rounded-[24px] border border-border bg-[#fffaf4] p-5 shadow-sm">
+            <section className="rounded-[24px] border border-border bg-[#f2fcfc] p-5 shadow-sm">
               <div className="mb-3 flex items-center gap-3">
                 <div className="rounded-2xl bg-white p-2 text-accent">
                   <Clock3 className="h-5 w-5" />

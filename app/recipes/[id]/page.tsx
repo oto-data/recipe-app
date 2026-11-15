@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { recipeFromDb, recipes as sampleRecipes } from '@/lib/recipes';
 import { DeleteRecipeButton } from '@/components/DeleteRecipeButton';
+import { CookingTimer } from '@/components/CookingTimer';
 
 async function getRecipe(id: string) {
   try {
@@ -181,6 +182,8 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
               <DeleteRecipeButton recipeId={recipe.id} />
             </div>
           </div>
+
+          <CookingTimer steps={recipe.steps} />
 
           <div className="rounded-[28px] border border-border bg-surface p-6 shadow-soft">
             <h2 className="mb-4 text-lg font-semibold text-textPrimary">関連タグ</h2>
