@@ -4,9 +4,9 @@
 
 :root {
   color-scheme: light;
-  font-family: 'Inter', 'Noto Sans JP', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background-color: #f7f2eb;
-  color: #2f2b24;
+  font-family: var(--font-zen-maru), 'Zen Maru Gothic', 'Noto Sans JP', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #effafa;
+  color: #173f42;
 }
 
 html {
@@ -15,7 +15,7 @@ html {
 
 body {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f7f2eb 0%, #f1e7da 100%);
+  background: linear-gradient(135deg, #effafa 0%, #dcf5f5 55%, #d3f0f7 100%);
 }
 
 a {
@@ -34,12 +34,12 @@ select {
 }
 
 ::selection {
-  background: rgba(217, 125, 63, 0.25);
+  background: rgba(20, 184, 201, 0.25);
 }
 
 input:focus,
 textarea:focus,
 select:focus {
   transition: border-color 180ms ease, box-shadow 180ms ease;
-  box-shadow: 0 0 0 4px rgba(217, 125, 63, 0.12);
+  box-shadow: 0 0 0 4px rgba(20, 184, 201, 0.14);
 }

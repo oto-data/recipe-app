@@ -36,7 +36,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <section className="overflow-hidden rounded-[32px] border border-border bg-surface shadow-soft">
-          <div className="relative overflow-hidden bg-gradient-to-br from-[#f8efe1] via-[#f4e4d2] to-[#efe0ca] p-6 sm:p-8">
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#dcf7f7] via-[#c8f0ee] to-[#bfe9f5] p-6 sm:p-8">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.7),transparent_45%)]" />
             <div className="relative space-y-6">
               <div className="flex flex-wrap items-center gap-3">
@@ -90,7 +90,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
 
             <section className="rounded-[24px] border border-border bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-2xl bg-[#fff7ee] p-2 text-accent">
+                <div className="rounded-2xl bg-[#e6fafa] p-2 text-accent">
                   <ListChecks className="h-5 w-5" />
                 </div>
                 <div>
@@ -110,7 +110,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
 
             <section className="rounded-[24px] border border-border bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-2xl bg-[#fff7ee] p-2 text-accent">
+                <div className="rounded-2xl bg-[#e6fafa] p-2 text-accent">
                   <BookOpen className="h-5 w-5" />
                 </div>
                 <div>
@@ -121,19 +121,23 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
               <div className="space-y-4">
                 {recipe.steps.map((step, index) => (
                   <div key={`${step.label}-${index}`} className="rounded-[22px] border border-border bg-background p-5">
-                    <div className="mb-4 flex items-center gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-base font-bold text-white">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-base font-bold text-white">
                         {index + 1}
                       </div>
-                      <h3 className="text-lg font-semibold text-textPrimary">{step.label}</h3>
+                      <div>
+                        {step.label ? (
+                          <h3 className="mb-2 text-lg font-semibold text-textPrimary">{step.label}</h3>
+                        ) : null}
+                        <p className="text-base leading-8 text-textSecondary">{step.description}</p>
+                      </div>
                     </div>
-                    <p className="text-base leading-8 text-textSecondary">{step.description}</p>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="rounded-[24px] border border-border bg-[#fffaf4] p-5 shadow-sm">
+            <section className="rounded-[24px] border border-border bg-[#f2fcfc] p-5 shadow-sm">
               <div className="mb-3 flex items-center gap-3">
                 <div className="rounded-2xl bg-white p-2 text-accent">
                   <Sparkles className="h-5 w-5" />
@@ -149,7 +153,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
           <div className="rounded-[28px] border border-border bg-surface p-6 shadow-soft">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-textPrimary">アクション</h2>
-              <div className="rounded-2xl bg-[#fff7ee] p-2 text-accent">
+              <div className="rounded-2xl bg-[#e6fafa] p-2 text-accent">
                 <TimerReset className="h-5 w-5" />
               </div>
             </div>

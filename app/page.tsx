@@ -2,16 +2,15 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { Search, Sparkles } from 'lucide-react';
+import { Heart, Plus, Search } from 'lucide-react';
 import { RecipeCard } from '../components/RecipeCard';
-import { CookpadRanking } from '../components/CookpadRanking';
 import { tags } from '../lib/recipes';
-import { cookpadTop100Recipes } from '../lib/cookpad';
 import type { Recipe } from '../lib/recipes';
 
 export default function HomePage() {
   const [query, setQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [favoriteOnly, setFavoriteOnly] = useState(false);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -37,9 +36,11 @@ export default function HomePage() {
         selectedTags.length === 0 ||
         selectedTags.every((tag) => recipe.tags.includes(tag));
 
-      return matchesQuery && matchesTags;
+      const matchesFavorite = !favoriteOnly || Boolean(recipe.favorite);
+
+      return matchesQuery && matchesTags && matchesFavorite;
     });
-  }, [query, selectedTags, recipes]);
+  }, [query, selectedTags, favoriteOnly, recipes]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((current) =>
@@ -47,143 +48,105 @@ export default function HomePage() {
     );
   };
 
+  const toggleFavorite = (recipeId: string, favorite: boolean) => {
+    setRecipes((current) =>
+      current.map((recipe) => (recipe.id === recipeId ? { ...recipe, favorite } : recipe))
+    );
+  };
+
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      <section className="rounded-[28px] border border-border bg-surface p-6 shadow-soft">
-        <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="mb-3 text-sm font-medium uppercase tracking-[0.24em] text-accentDark">レシピノート</p>
-            <h1 className="text-3xl font-semibold leading-tight text-textPrimary sm:text-4xl">家族のためのレシピ管理</h1>
-            <p className="mt-4 max-w-2xl text-base leading-8 text-textSecondary">
-              お気に入りのレシピを残して、買い物や調理をスムーズに。スマホでも読みやすいレイアウト。
-            </p>
-          </div>
-          <Link
-            href="#new-recipe"
-            className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-accentDark"
-          >
-            新規レシピを追加
-          </Link>
+    <main className="mx-auto max-w-6xl px-4 pb-24 pt-6 sm:px-6 lg:px-8">
+      <header className="mb-5 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-[0.24em] text-accentDark">レシピノート</p>
+          <h1 className="mt-1 text-2xl font-bold leading-tight text-textPrimary sm:text-3xl">
+            家族のためのレシピ管理
+          </h1>
         </div>
+        <button
+          type="button"
+          onClick={() => setFavoriteOnly((current) => !current)}
+          className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition ${
+            favoriteOnly
+              ? 'border-[#ff8fa3] bg-[#fff0f3] text-[#e05a75]'
+              : 'border-border bg-surface text-textPrimary hover:border-[#ff8fa3]'
+          }`}
+        >
+          <Heart className={`h-4 w-4 ${favoriteOnly ? 'fill-[#ff8fa3] text-[#ff8fa3]' : ''}`} />
+          お気に入り
+        </button>
+      </header>
 
-        <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-          <div className="space-y-6">
-            <div className="rounded-3xl border border-border bg-background p-5">
-              <label htmlFor="search" className="text-sm font-medium text-textSecondary">キーワード検索</label>
-              <div className="mt-3 flex items-center gap-3 rounded-3xl border border-border bg-white px-4 py-3">
-                <Search className="h-5 w-5 text-textSecondary" />
-                <input
-                  id="search"
-                  type="search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="レシピ名・材料・タグで検索"
-                  className="w-full border-none bg-transparent text-base text-textPrimary outline-none placeholder:text-textSecondary"
-                />
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-border bg-background p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-textSecondary">タグで絞り込み</p>
-                  <p className="mt-1 text-sm text-textSecondary">複数選択可能</p>
-                </div>
-                <Sparkles className="h-5 w-5 text-accent" />
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {tags.map((tag) => {
-                  const active = selectedTags.includes(tag);
-                  return (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => toggleTag(tag)}
-                      className={`rounded-full border px-4 py-2 text-sm transition ${
-                        active
-                          ? 'border-accent bg-accent text-white'
-                          : 'border-border bg-white text-textPrimary hover:border-accent hover:text-accent'
-                      }`}
-                    >
-                      {tag}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-3xl border border-border bg-background p-5">
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-textSecondary">最近のレシピ</p>
-                <h2 className="mt-1 text-xl font-semibold text-textPrimary">作ったばかり</h2>
-              </div>
-              <span className="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase text-white">New</span>
-            </div>
-            <div className="space-y-4">
-              {recipes.slice(0, 3).map((recipe) => (
-                <article key={recipe.id} className="rounded-3xl border border-border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-soft">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-textPrimary">{recipe.title}</h3>
-                      <p className="mt-1 text-sm leading-6 text-textSecondary">{recipe.description}</p>
-                    </div>
-                    <div className="text-right text-sm text-textSecondary">
-                      <p>{recipe.duration}</p>
-                      <p className="mt-1">{recipe.servings}</p>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {recipe.tags.map((tag) => (
-                      <span key={tag} className="rounded-full bg-background px-3 py-1 text-xs font-semibold text-textSecondary">{tag}</span>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
+      <div className="sticky top-0 z-20 -mx-4 bg-background/85 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="flex items-center gap-3 rounded-full border border-border bg-surface px-4 py-3 shadow-sm">
+          <Search className="h-5 w-5 shrink-0 text-textSecondary" />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="レシピ名・材料・タグで検索"
+            className="w-full border-none bg-transparent text-base text-textPrimary outline-none placeholder:text-textSecondary"
+          />
         </div>
-      </section>
-
-      <section className="mt-10">
-        <CookpadRanking recipes={cookpadTop100Recipes} />
-      </section>
-
-      <section id="new-recipe" className="mt-10 rounded-[28px] border border-border bg-surface p-6 shadow-soft">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-medium uppercase tracking-[0.24em] text-accentDark">まずはここから</p>
-            <h2 className="mt-3 text-2xl font-semibold text-textPrimary sm:text-3xl">レシピを追加・編集</h2>
-            <p className="mt-3 max-w-2xl text-base leading-8 text-textSecondary">
-              料理名や材料、手順を入力して、自分だけのレシピ集を育てましょう。
-            </p>
-          </div>
-          <Link href="/recipes/new" className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-accentDark">
-            新規レシピを登録
-          </Link>
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+          {tags.map((tag) => {
+            const active = selectedTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => toggleTag(tag)}
+                className={`shrink-0 rounded-full border px-4 py-2 text-sm transition ${
+                  active
+                    ? 'border-accent bg-accent text-white'
+                    : 'border-border bg-surface text-textPrimary hover:border-accent hover:text-accent'
+                }`}
+              >
+                {tag}
+              </button>
+            );
+          })}
         </div>
+      </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-          <div>
-            <h3 className="text-xl font-semibold text-textPrimary">検索結果</h3>
-            <p className="mt-2 text-sm text-textSecondary">{filteredRecipes.length} 件のレシピが見つかりました。</p>
-            <div className="mt-6 grid gap-4">
-              {filteredRecipes.map((recipe) => (
-                <RecipeCard key={recipe.id} recipe={recipe} />
-              ))}
-            </div>
-          </div>
+      <p className="mt-4 text-sm text-textSecondary">{filteredRecipes.length} 件のレシピ</p>
 
-          <div className="rounded-3xl border border-border bg-background p-5">
-            <h3 className="text-lg font-semibold text-textPrimary">今のフィルター</h3>
-            <div className="mt-4 min-h-[120px] rounded-3xl border border-border bg-white p-4 text-sm text-textSecondary">
-              {selectedTags.length === 0 ? 'タグは未選択です。' : selectedTags.join(' / ')}
-              {query && <p className="mt-3">検索キーワード: 「{query}」</p>}
-            </div>
-          </div>
+      {isLoading ? (
+        <div className="mt-6 rounded-3xl border border-border bg-surface p-6 text-center text-textSecondary">
+          読み込み中...
         </div>
-      </section>
+      ) : filteredRecipes.length === 0 ? (
+        <div className="mt-6 rounded-3xl border border-border bg-surface p-6 text-center text-textSecondary">
+          レシピが見つかりませんでした。右下の ＋ から追加できます。
+        </div>
+      ) : (
+        <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-3">
+          {filteredRecipes.map((recipe) => (
+            <RecipeCard
+              key={recipe.id}
+              recipe={recipe}
+              onToggleFavorite={toggleFavorite}
+            />
+          ))}
+        </div>
+      )}
+
+      <footer className="mt-10 flex flex-wrap gap-4 text-sm font-semibold">
+        <Link href="/cookpad" className="text-accent transition hover:text-accentDark">
+          Cookpadランキングを見る →
+        </Link>
+        <Link href="/recipes" className="text-accent transition hover:text-accentDark">
+          保存済みレシピ一覧 →
+        </Link>
+      </footer>
+
+      <Link
+        href="/recipes/new"
+        aria-label="新しいレシピを追加"
+        className="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-white shadow-soft transition hover:bg-accentDark"
+      >
+        <Plus className="h-7 w-7" />
+      </Link>
     </main>
   );
 }

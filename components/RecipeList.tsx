@@ -181,7 +181,7 @@ export function RecipeList() {
               <button
                 type="button"
                 onClick={() => setFavoriteOnly((current) => !current)}
-                className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm transition ${favoriteOnly ? 'border-accent bg-[#fff6eb] text-accent' : 'border-border bg-background text-textPrimary'}`}
+                className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm transition ${favoriteOnly ? 'border-[#ff8fa3] bg-[#fff0f3] text-[#e05a75]' : 'border-border bg-background text-textPrimary'}`}
               >
                 <Star className={`h-4 w-4 ${favoriteOnly ? 'fill-accent' : ''}`} />
                 {favoriteOnly ? 'お気に入りのみ' : 'お気に入り表示'}
@@ -197,9 +197,9 @@ export function RecipeList() {
           <div className="rounded-3xl border border-border bg-white p-5">
             <p className="text-sm font-medium text-textSecondary">操作</p>
             <div className="mt-4 space-y-3 text-sm text-textSecondary">
-              <p>・星ボタンでお気に入り登録できます。</p>
-              <p>・タイマー候補から簡易カウントダウンを開始できます。</p>
-              <p>・材料・手順は展開して確認できます。</p>
+              <p>・カードのハートでお気に入り登録できます。</p>
+              <p>・カードをタップすると詳細が開きます。</p>
+              <p>・材料・手順は詳細画面で確認できます。</p>
             </div>
           </div>
         </div>
@@ -211,7 +211,7 @@ export function RecipeList() {
         </div>
       ) : null}
 
-      <div className="mt-8 grid gap-4">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {isLoading ? (
           <div className="rounded-3xl border border-border bg-white p-6 text-center text-textSecondary">
             読み込み中...
