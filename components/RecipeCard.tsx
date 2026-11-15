@@ -12,9 +12,11 @@ type RecipeCardProps = {
   onDeleted?: () => void;
   onError?: (message: string) => void;
   onToggleFavorite?: (recipeId: string, favorite: boolean) => void;
+  /** Fridge-search hits: when > 0, a 「材料○件一致」 badge is shown. */
+  matchCount?: number;
 };
 
-export function RecipeCard({ recipe, onError, onToggleFavorite }: RecipeCardProps) {
+export function RecipeCard({ recipe, onError, onToggleFavorite, matchCount }: RecipeCardProps) {
   const router = useRouter();
   const meta = getCategoryMeta(recipe.category);
 
@@ -71,6 +73,11 @@ export function RecipeCard({ recipe, onError, onToggleFavorite }: RecipeCardProp
         {recipe.category ? (
           <span className="absolute left-3 top-3 rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-accentDark">
             {recipe.category}
+          </span>
+        ) : null}
+        {matchCount && matchCount > 0 ? (
+          <span className="absolute bottom-3 left-3 rounded-full bg-accentDark/90 px-3 py-1 text-xs font-semibold text-white">
+            材料{matchCount}件一致
           </span>
         ) : null}
         <button

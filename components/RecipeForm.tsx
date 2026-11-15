@@ -6,6 +6,8 @@ import { categories, durationOptions, getCategoryMeta, servingsOptions, tags } f
 import type { RecipeFormValues, RecipeStep } from '@/lib/recipes';
 import { ChipSelect, TagChips } from '@/components/ChipSelect';
 import { PasteImport } from '@/components/PasteImport';
+import { UrlImport } from '@/components/UrlImport';
+import type { ImportedRecipeDraft } from '@/lib/importRecipe';
 
 export type { RecipeFormValues } from '@/lib/recipes';
 
@@ -144,6 +146,21 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
     if (newSteps.length > 0) setSteps(newSteps);
   };
 
+  const handleUrlApply = (draft: ImportedRecipeDraft) => {
+    if (draft.title) setTitle(draft.title);
+    if (draft.description) setDescription(draft.description);
+    if (draft.duration) setDuration(draft.duration);
+    if (draft.servings) setServings(draft.servings);
+    if (draft.ingredients.length > 0) setIngredients(draft.ingredients);
+    if (draft.steps.length > 0) setSteps(draft.steps);
+    if (draft.image) {
+      handlePhotoChange(null);
+      setImage(draft.image);
+    }
+    if (draft.sourceUrl) setSourceUrl(draft.sourceUrl);
+    if (draft.description || draft.sourceUrl) setShowDetails(true);
+  };
+
   const handlePhotoChange = (file: File | null) => {
     if (photoPreview) {
       URL.revokeObjectURL(photoPreview);
@@ -275,6 +292,8 @@ export function RecipeForm({ initialValues, recipeId, submitLabel, onSubmit }: R
           </label>
         )}
       </div>
+
+      <UrlImport onApply={handleUrlApply} />
 
       <PasteImport onApply={handlePasteApply} />
 

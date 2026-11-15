@@ -7,6 +7,9 @@ import { DeleteRecipeButton } from '@/components/DeleteRecipeButton';
 import { CookingTimer } from '@/components/CookingTimer';
 import { CookedButton } from '@/components/CookedButton';
 import { CopyRecipeButton } from '@/components/CopyRecipeButton';
+import { CookingMode } from '@/components/CookingMode';
+import { ShoppingListToggle } from '@/components/ShoppingListToggle';
+import { IngredientsScaler } from '@/components/IngredientsScaler';
 
 async function getRecipe(id: string) {
   try {
@@ -105,14 +108,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
                   <p className="text-sm text-textSecondary">必要な食材をチェックしながら準備できます。</p>
                 </div>
               </div>
-              <div className="space-y-3">
-                {recipe.ingredients.map((item) => (
-                  <label key={item} className="flex items-center gap-3 rounded-2xl border border-border bg-background px-4 py-3 transition hover:border-accent">
-                    <input type="checkbox" className="h-4 w-4 accent-accent" />
-                    <span className="text-base text-textPrimary">{item}</span>
-                  </label>
-                ))}
-              </div>
+              <IngredientsScaler ingredients={recipe.ingredients} servings={recipe.servings} />
             </section>
 
             <section className="rounded-[24px] border border-border bg-white p-5 shadow-sm">
@@ -186,6 +182,8 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
                 レシピを編集
               </Link>
               <CopyRecipeButton recipe={recipe} />
+              <CookingMode recipe={recipe} />
+              <ShoppingListToggle recipeId={recipe.id} />
               {recipe.sourceUrl ? (
                 <a
                   href={recipe.sourceUrl}
