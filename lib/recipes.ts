@@ -17,9 +17,14 @@ export type Recipe = {
   steps: RecipeStep[];
   notes: string;
   favorite?: boolean;
+  image: string;
+  sourceUrl: string;
+  lastCookedAt: string | null;
+  cookedCount: number;
 };
 
-export type RecipeFormValues = Omit<Recipe, 'id'>;
+/** Fields the create/edit form can submit (cooked stats are managed by the cooked endpoint). */
+export type RecipeFormValues = Omit<Recipe, 'id' | 'lastCookedAt' | 'cookedCount'>;
 
 export const categories = ['主食', 'おかず', 'スイーツ', '軽食', 'ドリンク', 'その他'];
 
@@ -62,6 +67,10 @@ export function recipeFromDb(recipe: PrismaRecipe): Recipe {
     servings: recipe.servings,
     notes: recipe.notes,
     favorite: Boolean(recipe.favorite),
+    image: recipe.image ?? '',
+    sourceUrl: recipe.sourceUrl ?? '',
+    lastCookedAt: recipe.lastCookedAt ? new Date(recipe.lastCookedAt).toISOString() : null,
+    cookedCount: recipe.cookedCount ?? 0,
     tags: recipe.tags ? recipe.tags.split(',').filter(Boolean) : [],
     ingredients: recipe.ingredients ? JSON.parse(recipe.ingredients) : [],
     steps: recipe.steps ? JSON.parse(recipe.steps) : []
@@ -83,7 +92,11 @@ export const recipes: Recipe[] = [
       { label: '調味料を混ぜる', description: '醤油、みりん、砂糖、生姜のすりおろしを混ぜ合わせる。' },
       { label: '焼く', description: 'フライパンで鶏肉を焼き、調味料を加えて煮絡める。' }
     ],
-    notes: '照り焼きのたれは焦がさないように弱火で仕上げるときれいに仕上がります。'
+    notes: '照り焼きのたれは焦がさないように弱火で仕上げるときれいに仕上がります。',
+    image: '',
+    sourceUrl: '',
+    lastCookedAt: null,
+    cookedCount: 0
   },
   {
     id: '2',
@@ -99,6 +112,10 @@ export const recipes: Recipe[] = [
       { label: 'トマトを並べる', description: '耐熱皿に鶏肉とスライストマトを並べる。' },
       { label: 'チーズをのせる', description: 'ピザ用チーズをたっぷりのせ、オーブンで焼き上げる。' }
     ],
-    notes: '冷めてもおいしいので、作り置きにも向いています。お好みでバジルを仕上げに散らして。'
+    notes: '冷めてもおいしいので、作り置きにも向いています。お好みでバジルを仕上げに散らして。',
+    image: '',
+    sourceUrl: '',
+    lastCookedAt: null,
+    cookedCount: 0
   }
 ];

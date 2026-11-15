@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma';
 import { recipeFromDb, recipes as sampleRecipes } from '@/lib/recipes';
 import { DeleteRecipeButton } from '@/components/DeleteRecipeButton';
 import { CookingTimer } from '@/components/CookingTimer';
+import { CookedButton } from '@/components/CookedButton';
+import { CopyRecipeButton } from '@/components/CopyRecipeButton';
 
 async function getRecipe(id: string) {
   try {
@@ -37,6 +39,10 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <section className="overflow-hidden rounded-[32px] border border-border bg-surface shadow-soft">
+          {recipe.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={recipe.image} alt={recipe.title} className="h-64 w-full object-cover sm:h-80" />
+          ) : null}
           <div className="relative overflow-hidden bg-gradient-to-br from-[#dcf7f7] via-[#c8f0ee] to-[#bfe9f5] p-6 sm:p-8">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.7),transparent_45%)]" />
             <div className="relative space-y-6">
@@ -179,9 +185,26 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
               >
                 レシピを編集
               </Link>
+              <CopyRecipeButton recipe={recipe} />
+              {recipe.sourceUrl ? (
+                <a
+                  href={recipe.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center rounded-full border border-border bg-white px-4 py-3 text-sm font-semibold text-textPrimary transition hover:border-accent hover:text-accent"
+                >
+                  出典を見る
+                </a>
+              ) : null}
               <DeleteRecipeButton recipeId={recipe.id} />
             </div>
           </div>
+
+          <CookedButton
+            recipeId={recipe.id}
+            initialLastCookedAt={recipe.lastCookedAt}
+            initialCookedCount={recipe.cookedCount}
+          />
 
           <CookingTimer steps={recipe.steps} />
 

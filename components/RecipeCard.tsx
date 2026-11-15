@@ -60,9 +60,14 @@ export function RecipeCard({ recipe, onError, onToggleFavorite }: RecipeCardProp
       className="overflow-hidden rounded-[26px] border border-border bg-surface shadow-soft transition duration-200 hover:-translate-y-1"
     >
       <div className={`relative flex h-32 items-center justify-center bg-gradient-to-br ${meta.gradient} sm:h-40`}>
-        <span className="text-6xl" aria-hidden="true">
-          {meta.emoji}
-        </span>
+        {recipe.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={recipe.image} alt={recipe.title} className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <span className="text-6xl" aria-hidden="true">
+            {meta.emoji}
+          </span>
+        )}
         {recipe.category ? (
           <span className="absolute left-3 top-3 rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-accentDark">
             {recipe.category}
